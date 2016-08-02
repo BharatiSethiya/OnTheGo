@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.geofire.GeoFire;
@@ -34,13 +33,17 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
     public static final String TAG = "OnTheGo";
     public static final int PLACE_PICKER_REQUEST = 575;
+    private  Marker mMarker;
 
-    private TextView txtView;
     private GoogleMap mMap;
+    private Map<String, Marker> mPlaces;
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -106,8 +109,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 Log.d(TAG, "Got the location");
                 // Add a marker in Sydney, Australia, and move the camera.
                 LatLng boston = new LatLng(location.getLatitude(), location.getLongitude());
-                mMap.addMarker(new MarkerOptions().position(boston).icon(BitmapDescriptorFactory.fromResource(R.mipmap.mepin)).title("Your location!"));
-                mMap.moveCamera(CameraUpdateFactory.newLatLng(boston));
+                if(mMarker == null) {
+                    mMarker = mMap.addMarker(new MarkerOptions().position(boston).icon(BitmapDescriptorFactory.fromResource(R.mipmap.mepin)).title("Your location!"));
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(boston, 10f));
+                } else {
+                    mMarker.setPosition(boston);
+                }
 
                 // Called when a new location is found by the network location provider.
                 DatabaseReference ref = FirebaseDatabase.getInstance().getReference("geofire");
@@ -117,14 +124,23 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 GeoQuery geoQuery = geoFire.queryAtLocation(new GeoLocation(location.getLatitude(), location.getLongitude()), 1000);
                 geoQuery.addGeoQueryEventListener(new GeoQueryEventListener() {
                     @Override
-                    public void onKeyEntered(String key, GeoLocation location) {
+                    public void onKeyEntered(final String key, GeoLocation location) {
                         Log.d(TAG, "key " + key + "lat lon " + location.latitude + " " + location.longitude);
 
 
                         LatLng zone = new LatLng(location.latitude, location.longitude);
-                        final Marker marker = mMap.addMarker(new MarkerOptions().position(zone));
-                        mMap.moveCamera(CameraUpdateFactory.newLatLng(zone));
 
+                        if (mPlaces == null) {
+                            mPlaces = new HashMap<String, Marker>();
+                        }
+
+                        Marker marker = mPlaces.get(key);
+                        if (marker == null) {
+                            marker = mMap.addMarker(new MarkerOptions().position(zone));
+                            mPlaces.put(key, marker);
+                        } else {
+                            marker.setPosition(new LatLng(location.latitude, location.longitude));
+                        }
 
                         FirebaseDatabase database = FirebaseDatabase.getInstance();
                         DatabaseReference myRef = database.getReference("Zones");
@@ -133,8 +149,15 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
                                 Log.d(TAG, "Got the data value!");
-                                marker.setTitle(dataSnapshot.getValue().toString());
 
+                                if (mPlaces == null) {
+                                    return;
+                                }
+
+                                Marker marker = mPlaces.get(key);
+                                if (marker != null) {
+                                    marker.setTitle(dataSnapshot.getValue().toString());
+                                }
                             }
 
                             @Override
@@ -149,6 +172,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     @Override
                     public void onKeyExited(String key) {
                         Log.d(TAG, String.format("Key %s is no longer in the search area", key));
+                        if (mPlaces == null) {
+                            return;
+                        }
+
+                        Marker marker = mPlaces.get(key);
+                        if (marker != null) {
+                            marker.remove();
+                        }
                     }
 
                     @Override
@@ -158,6 +189,17 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                     @Override
                     public void onGeoQueryReady() {
+                        if (mPlaces == null) {
+                            return;
+                        }
+/*
+                        LatLngBounds.Builder builder = new LatLngBounds.Builder();
+                        for (Map.Entry<String, Marker> marker: mPlaces.entrySet()) {
+                            builder.include(marker.getValue().getPosition());
+                        }
+
+                        mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(builder.build()));
+*/
                         Log.d(TAG, "All initial data has been loaded and events have been fired!");
                     }
 
@@ -181,7 +223,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         try {
 // Register the listener with the Location Manager to receive location updates
-            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 30000, 20, locationListener);
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
         } catch (SecurityException se) {
             Log.e(TAG, "Security Exception ");
             se.printStackTrace();

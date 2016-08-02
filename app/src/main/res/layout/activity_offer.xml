@@ -4,18 +4,21 @@
     android:layout_height="fill_parent"
     android:orientation="vertical" >
     <ImageView
-        android:layout_gravity="center_horizontal" 
+        android:layout_gravity="center_horizontal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="21dp"
         android:src="@mipmap/starbucks"
         />
     <TextView android:id="@+id/text"
+        android:layout_gravity="center_horizontal"
         android:layout_margin="21dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Great Offer. 50% off untill 7 pm. Hurry!!!" />
     <Button android:id="@+id/button"
         android:layout_width="wrap_content"
+        android:layout_gravity="center_horizontal"
         android:layout_margin="21dp"
         android:layout_height="wrap_content"
         android:text="Redeem" />

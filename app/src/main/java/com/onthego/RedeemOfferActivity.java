@@ -41,7 +41,7 @@ public class RedeemOfferActivity extends Activity {
                     AuthUI.getInstance().signOut(RedeemOfferActivity.this);
                     //already signed in
                 }
-                startActivityForResult(AuthUI.getInstance().createSignInIntentBuilder().setProviders(AuthUI.EMAIL_PROVIDER, AuthUI.FACEBOOK_PROVIDER, AuthUI.GOOGLE_PROVIDER).build(), RC_SIGN_IN);
+                startActivityForResult(AuthUI.getInstance().createSignInIntentBuilder().setProviders(AuthUI.EMAIL_PROVIDER, AuthUI.GOOGLE_PROVIDER).build(), RC_SIGN_IN);
             }
         });
     }
