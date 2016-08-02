@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "525669579013",
+    "firebase_url": "https://onthego-6b8f5.firebaseio.com",
+    "project_id": "onthego-6b8f5",
+    "storage_bucket": "onthego-6b8f5.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:525669579013:android:3afe8a95b28cb12f",
+        "android_client_info": {
+          "package_name": "com.onthego"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "525669579013-5mmo0na61i6lniol1ib1c07ul70mmu3b.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.onthego",
+            "certificate_hash": "5FBB26A1AA0C5B9DDBD9C95BA5B81B851BE34067"
+          }
+        },
+        {
+          "client_id": "525669579013-esn5o4ftlbl6el7psrn35ncc1lksad1g.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBfuekbaa1noUaCPa-rK1ElWQ50_v2uARM"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "525669579013-esn5o4ftlbl6el7psrn35ncc1lksad1g.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
